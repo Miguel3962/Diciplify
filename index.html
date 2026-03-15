@@ -301,6 +301,10 @@ let currentUser = localStorage.getItem("currentUser")
 let selectedDay = null
 let reminderText = ""
 
+if(currentUser){
+document.getElementById("loginScreen").style.display="none"
+updateGreeting()
+}
 
 
 function save(){
@@ -397,39 +401,40 @@ save()
 
 function drawChart(){
 
-const canvas=document.getElementById('weekChart')
-const ctx=canvas.getContext('2d')
+const canvas = document.getElementById('weekChart')
+const ctx = canvas.getContext('2d')
 
-canvas.width=500
-canvas.height=260
+canvas.width = 500
+canvas.height = 260
 
-ctx.clearRect(0,0,500,260)
+ctx.clearRect(0,0,canvas.width,canvas.height)
 
-const style=getComputedStyle(document.body)
-const barColor=style.getPropertyValue('--bar')
+const style = getComputedStyle(document.body)
+const barColor = style.getPropertyValue('--bar')
 
-const days=['Dom','Seg','Ter','Qua','Qui','Sex','Sab']
+const days = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab']
 
-ctx.font="12px Poppins"
-ctx.fillStyle="white"
-
-let max=Math.max(...weeklyData,5)
+let max = Math.max(...weeklyData,5)
 
 for(let i=0;i<7;i++){
 
-let value=weeklyData[i]
+let value = weeklyData[i]
+let barHeight = (value/max)*150
 
-let barHeight=(value/max)*150
+let x = 60 + i*60
+let y = 200 - barHeight
 
-let x=60+i*60
-let y=200-barHeight
-
-ctx.fillStyle=barColor
+ctx.fillStyle = barColor
 ctx.fillRect(x,y,40,barHeight)
 
-ctx.fillStyle="white"
-ctx.fillText(value,x+14,y-5)
-ctx.fillText(days[i],x+8,220)
+/* número em cima da barra */
+ctx.fillStyle = "white"
+ctx.font = "500 20px 'Poppins', sans-serif"
+ctx.fillText(value,x+14,y-8)
+
+/* dias da semana */
+ctx.font = "600 15px 'Poppins', sans-serif"
+ctx.fillText(days[i],x+6,240)
 
 }
 
@@ -554,7 +559,6 @@ renderReminders()
 
 }
 
-
 function deleteReminder(day,index){
 if(confirm("Deseja apagar este lembrete?")){
 calendarData[day].splice(index,1)
@@ -630,11 +634,15 @@ if(data.success){
 
 profile = data.name
 currentUser = email
+
 localStorage.setItem("currentUser",email)
+localStorage.setItem("profile",data.name)
 
 startApp()
 
-}else{
+}
+
+else{
 alert(data.error)
 }
 
@@ -650,15 +658,8 @@ location.reload()
 function startApp(){
 
 document.getElementById("loginScreen").style.display="none"
-
-if(users[currentUser]){
-profile = users[currentUser].name
 updateGreeting()
-}
 
-}
-if(currentUser){
-startApp()
 }
 
 
