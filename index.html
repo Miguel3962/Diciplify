@@ -302,9 +302,9 @@ Cancelar
 
 <script>
 
-let habits = JSON.parse(localStorage.getItem('habits')) || []
-let calendarData = JSON.parse(localStorage.getItem('calendar')) || {}
-let weeklyData = JSON.parse(localStorage.getItem('weeklyData')) || [0,0,0,0,0,0,0]
+let habits = []
+let calendarData = {}
+let weeklyData = [0,0,0,0,0,0,0]
 let profile = localStorage.getItem('profile') || ""
 let currentUser = localStorage.getItem("currentUser")
 let selectedDay = null
@@ -313,13 +313,21 @@ let reminderText = ""
 if(currentUser){
 document.getElementById("loginScreen").style.display="none"
 updateGreeting()
+loadHabits()
 }
 
 
 function save(){
-localStorage.setItem('habits',JSON.stringify(habits))
-localStorage.setItem('calendar',JSON.stringify(calendarData))
-localStorage.setItem('weeklyData',JSON.stringify(weeklyData))
+fetch("https://diciplify.onrender.com/saveHabits",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email: currentUser,
+habits: habits
+})
+})
 }
 
 function closeColorPicker(){
@@ -649,6 +657,8 @@ localStorage.setItem("profile",data.name)
 
 startApp()
 
+loadHabits()
+
 }
 
 else{
@@ -661,6 +671,28 @@ function logout(){
 
 localStorage.removeItem("currentUser")
 location.reload()
+
+}
+
+async function loadHabits(){
+
+const res = await fetch("https://diciplify.onrender.com/getHabits",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email: currentUser
+})
+})
+
+const data = await res.json()
+
+if(data.habits){
+habits = data.habits
+renderHabits()
+drawChart()
+}
 
 }
 
