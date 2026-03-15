@@ -89,6 +89,12 @@ margin-bottom:12px;
 color:#9ca3af;
 }
 
+.settingsPanel h2 span{
+background:var(--soft);
+padding:4px 10px;
+border-radius:8px;
+}
+
 </style>
 
 </head>
@@ -199,7 +205,10 @@ position:absolute;
 
 <div id="settings" class="settingsPanel">
 
-<h2>Configurações</h2>
+<h2 style="display:flex;align-items:center;gap:10px">
+<span onclick="toggleSettings()" style="cursor:pointer;font-size:22px">←</span>
+Configurações
+</h2>
 
 <div class="settingItem">
 <b>Seu nome</b>
