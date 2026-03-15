@@ -307,6 +307,16 @@ let calendarData = {}
 let weeklyData = [0,0,0,0,0,0,0]
 let profile = localStorage.getItem('profile') || ""
 let currentUser = localStorage.getItem("currentUser")
+if(currentUser){
+
+document.getElementById("loginScreen").style.display="none"
+
+profile = localStorage.getItem("profile") || ""
+updateGreeting()
+
+loadUserData()
+
+}
 let selectedDay = null
 let reminderText = ""
 
@@ -318,6 +328,7 @@ loadHabits()
 
 
 function save(){
+
 fetch("https://diciplify.onrender.com/saveHabits",{
 method:"POST",
 headers:{
@@ -328,6 +339,29 @@ email: currentUser,
 habits: habits
 })
 })
+
+fetch("https://diciplify.onrender.com/saveWeekly",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email: currentUser,
+weeklyData: weeklyData
+})
+})
+
+fetch("https://diciplify.onrender.com/saveCalendar",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email: currentUser,
+calendarData: calendarData
+})
+})
+
 }
 
 function closeColorPicker(){
@@ -657,6 +691,8 @@ localStorage.setItem("profile",data.name)
 
 startApp()
 
+loadUserData()
+
 loadHabits()
 
 }
@@ -693,6 +729,39 @@ habits = data.habits
 renderHabits()
 drawChart()
 }
+
+}
+async function loadUserData(){
+
+const weekly = await fetch("https://diciplify.onrender.com/getWeekly",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email:currentUser
+})
+})
+
+const weeklyRes = await weekly.json()
+weeklyData = weeklyRes.weeklyData || [0,0,0,0,0,0,0]
+
+const cal = await fetch("https://diciplify.onrender.com/getCalendar",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({
+email:currentUser
+})
+})
+
+const calRes = await cal.json()
+calendarData = calRes.calendarData || {}
+
+generateCalendar()
+renderReminders()
+drawChart()
 
 }
 
