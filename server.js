@@ -1,7 +1,6 @@
 const express = require("express")
 const fs = require("fs")
 const cors = require("cors")
-app.use(cors())
 
 const app = express()
 
@@ -21,6 +20,8 @@ function saveUsers(users){
 fs.writeFileSync(FILE, JSON.stringify(users,null,2))
 }
 
+/* REGISTRAR CONTA */
+
 app.post("/register",(req,res)=>{
 
 const {name,email,password} = req.body
@@ -28,16 +29,25 @@ const {name,email,password} = req.body
 let users = readUsers()
 
 if(users[email]){
-return res.json({error:"Usuário já existe"})
+return res.json({
+error:"Este email já está cadastrado"
+})
 }
 
-users[email] = {name,password}
+users[email] = {
+name:name,
+password:password
+}
 
 saveUsers(users)
 
-res.json({success:true})
+res.json({
+success:true
+})
 
 })
+
+/* LOGIN */
 
 app.post("/login",(req,res)=>{
 
@@ -55,10 +65,12 @@ return res.json({error:"Senha incorreta"})
 
 res.json({
 success:true,
-name:users[email].name
+name:users.name
 })
 
 })
+
+/* SERVIDOR */
 
 app.listen(3000,()=>{
 console.log("Servidor rodando em http://localhost:3000")
